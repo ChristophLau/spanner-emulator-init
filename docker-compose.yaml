@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  spanner-emulator:
+    image: gcr.io/cloud-spanner-emulator/emulator:1.5.4
+    ports:
+      - 9010:9010
+      - 9020:9020
+
+  spanner-init:
+    depends_on:
+      spanner-emulator:
+        condition: service_started
+    build: .
+    environment:
+      INIT_DIR: init-scripts
+      INSTANCE_NAME: my-test
+      PROJECT_ID: my-project
+      SPANNER_EMULATOR_URL: http://spanner-emulator:9020/
+    volumes:
+      - ${PWD}/spanner-mock:/usr/bin/init-scripts
